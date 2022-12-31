@@ -35,4 +35,5 @@ export interface PatchDebtData{
     price?: number
     payday?: Date
     status?: StatusType
+    CreditorId?: number
 }

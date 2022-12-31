@@ -49,7 +49,10 @@ const Home = () => {
                         />
                     </CardInfo>
                     <CardInfo icon={SlNotebook} title={'Dívidas pagas'}>
-                        0
+                        {data.payed_debts || 0}
+                    </CardInfo>
+                    <CardInfo icon={SlNotebook} title={'Dívidas em aberto'}>
+                        {data.open_debts || 0}
                     </CardInfo>
                 </Wrap>
             ) : (

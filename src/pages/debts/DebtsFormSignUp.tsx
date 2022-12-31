@@ -51,8 +51,6 @@ const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
     const { mutateAsync } = useMutationDebts()
     const toast = useToastAlert()
 
-    
-
     const submit = async (data: DebtsFormValues) => {
         try {
             const obj_data = {

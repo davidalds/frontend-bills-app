@@ -12,6 +12,6 @@ export const monetaryUnformat = (num: number) => {
     return String(num).replace(/[R$]/g, '').replace('.', '').replace(',', '.')
 }
 
-export const dateFormat = (data: Date) =>{
-    return new Date(data).toLocaleDateString('pt-BR')
+export const dateFormat = (date: Date) => {
+    return String(date).split('-').reverse().join('/')
 }

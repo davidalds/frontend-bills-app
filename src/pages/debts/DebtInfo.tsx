@@ -8,6 +8,7 @@ import {
     HStack,
     Icon,
     Textarea,
+    useBoolean,
     VStack,
 } from '@chakra-ui/react'
 import FormInputsWrapper from '../../components/FormInputsWrapper'
@@ -19,8 +20,15 @@ import {
 } from '../../services/queries/interfaces/debtsQueriesInterface'
 import { useCallback, useEffect } from 'react'
 import { NumberFormatBase } from 'react-number-format'
-import { dateFormat, monetaryFormat } from '../../resources/formatFunctions'
-import { AiOutlineCheckCircle } from 'react-icons/ai'
+import {
+    monetaryFormat,
+    monetaryUnformat,
+} from '../../resources/formatFunctions'
+import {
+    AiOutlineCheckCircle,
+    AiOutlineUnlock,
+    AiOutlineLock,
+} from 'react-icons/ai'
 import { ImCancelCircle } from 'react-icons/im'
 import { TfiReload } from 'react-icons/tfi'
 import { useToastAlert } from '../../components/toastAlert'
@@ -28,6 +36,10 @@ import { useQueryClient } from 'react-query'
 import SpinnerSection from '../../components/SpinnerSection'
 import SectionAlert from '../../components/SectionAlert'
 import { useOutlet } from '../../components/useOutletContext'
+import SelectComponent from '../../components/FormSelect'
+import { useCreditorsSelect } from '../../services/queries/creditorsQueries'
+import { yupResolver } from '@hookform/resolvers/yup'
+import schema from './schema/debtsFormSchema'
 
 const DebtInfo = () => {
     const queryClient = useQueryClient()
@@ -38,9 +50,17 @@ const DebtInfo = () => {
         auth.userData.id,
         parseInt(id!)
     )
+    const { data: creditorData } = useCreditorsSelect(auth.userData.id)
     const { mutateAsync } = useMutationDebt(auth.userData.id, parseInt(id!))
-    const { register, setValue, control } = useForm<GetDebtData>()
-    const {submitLinks} = useOutlet()
+    const {
+        register,
+        setValue,
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<GetDebtData>({ resolver: yupResolver(schema) })
+    const { submitLinks } = useOutlet()
+    const [isEdit, setEdit] = useBoolean()
 
     useEffect(() => {
         if (submitLinks && id) {
@@ -53,11 +73,7 @@ const DebtInfo = () => {
 
     useEffect(() => {
         if (data) {
-            const debtObj = {
-                ...data,
-                payday: dateFormat(data.payday),
-            }
-            Object.entries(debtObj).map(([key, value]) =>
+            Object.entries(data).map(([key, value]) =>
                 setValue(key as any, value)
             )
         }
@@ -68,13 +84,42 @@ const DebtInfo = () => {
             try {
                 await mutateAsync({ status: status })
                 queryClient.invalidateQueries('debt')
+                setEdit.off()
                 toast('Status alterado com sucesso', 'success')
             } catch (err) {
                 toast('Ocorreu um erro ao alterar status', 'error')
             }
         },
-        [mutateAsync, toast, queryClient]
+        [mutateAsync, toast, queryClient, setEdit]
     )
+
+    const changeEdit = () => {
+        setEdit.toggle()
+        // Virtual DOM
+        if (isEdit) {
+            toast('Edição de dívida bloqueada!', 'info')
+        } else {
+            toast('Edição de dívida desbloqueada!', 'info')
+        }
+    }
+
+    const submit = async (data: GetDebtData) => {
+        try {
+            const debtObj = {
+                CreditorId: data.Creditor.id,
+                description: data.description,
+                payday: data.payday,
+                price: parseFloat(monetaryUnformat(data.price)),
+                title: data.title,
+            }
+            await mutateAsync({ ...debtObj })
+            queryClient.invalidateQueries('debt')
+            setEdit.off()
+            toast('Informações da dívida editadas com sucesso', 'success')
+        } catch {
+            toast('Ocorreu um erro ao editar informações da dívida', 'error')
+        }
+    }
 
     return (
         <>
@@ -93,90 +138,133 @@ const DebtInfo = () => {
                         p={2}
                         boxShadow={'base'}
                         mb={2}
-                        spacing={2}
-                        justifyContent={'end'}
+                        justifyContent={'space-between'}
                     >
-                        {data?.status !== 'Cancelada' ? (
+                        <HStack>
+                            {data.status !== 'Cancelada' ? (
+                                <Button
+                                    colorScheme={'orange'}
+                                    leftIcon={
+                                        <Icon
+                                            as={
+                                                isEdit
+                                                    ? AiOutlineLock
+                                                    : AiOutlineUnlock
+                                            }
+                                        />
+                                    }
+                                    size={'sm'}
+                                    onClick={changeEdit}
+                                >
+                                    {isEdit
+                                        ? 'Bloquear edição'
+                                        : 'Desbloquear edição'}
+                                </Button>
+                            ) : (
+                                <></>
+                            )}
+                        </HStack>
+                        <HStack>
+                            {data?.status !== 'Cancelada' ? (
+                                <Button
+                                    size={'sm'}
+                                    colorScheme={
+                                        data?.status === 'Devendo'
+                                            ? 'green'
+                                            : 'yellow'
+                                    }
+                                    leftIcon={
+                                        <Icon
+                                            as={
+                                                data?.status === 'Devendo'
+                                                    ? AiOutlineCheckCircle
+                                                    : TfiReload
+                                            }
+                                        />
+                                    }
+                                    onClick={() =>
+                                        submitStatus(
+                                            data?.status === 'Devendo'
+                                                ? 'Paga'
+                                                : 'Devendo'
+                                        )
+                                    }
+                                >
+                                    {data?.status === 'Devendo'
+                                        ? 'Confirmar pagamento'
+                                        : 'Desconfirmar pagamento'}
+                                </Button>
+                            ) : (
+                                <div />
+                            )}
                             <Button
                                 size={'sm'}
                                 colorScheme={
-                                    data?.status === 'Devendo'
-                                        ? 'green'
-                                        : 'yellow'
+                                    data?.status !== 'Cancelada'
+                                        ? 'red'
+                                        : 'orange'
                                 }
                                 leftIcon={
                                     <Icon
                                         as={
-                                            data?.status === 'Devendo'
-                                                ? AiOutlineCheckCircle
+                                            data?.status !== 'Cancelada'
+                                                ? ImCancelCircle
                                                 : TfiReload
                                         }
                                     />
                                 }
                                 onClick={() =>
                                     submitStatus(
-                                        data?.status === 'Devendo'
-                                            ? 'Paga'
+                                        data?.status !== 'Cancelada'
+                                            ? 'Cancelada'
                                             : 'Devendo'
                                     )
                                 }
                             >
-                                {data?.status === 'Devendo'
-                                    ? 'Confirmar pagamento'
-                                    : 'Desconfirmar pagamento'}
+                                {data?.status !== 'Cancelada'
+                                    ? 'Cancelar dívida'
+                                    : 'Reabrir dívida'}
                             </Button>
-                        ) : (
-                            <div />
-                        )}
-                        <Button
-                            size={'sm'}
-                            colorScheme={
-                                data?.status !== 'Cancelada' ? 'red' : 'orange'
-                            }
-                            leftIcon={
-                                <Icon
-                                    as={
-                                        data?.status !== 'Cancelada'
-                                            ? ImCancelCircle
-                                            : TfiReload
-                                    }
-                                />
-                            }
-                            onClick={() =>
-                                submitStatus(
-                                    data?.status !== 'Cancelada'
-                                        ? 'Cancelada'
-                                        : 'Devendo'
-                                )
-                            }
-                        >
-                            {data?.status !== 'Cancelada'
-                                ? 'Cancelar dívida'
-                                : 'Reabrir dívida'}
-                        </Button>
+                        </HStack>
                     </HStack>
-                    <VStack as={'form'} p={6} boxShadow={'base'}>
+                    <VStack
+                        as={'form'}
+                        onSubmit={handleSubmit(submit)}
+                        p={6}
+                        boxShadow={'base'}
+                    >
                         <FormInputsWrapper columns={2}>
                             <InputComponent
                                 type={'text'}
                                 {...register('title')}
                                 label={'Título'}
-                                isReadOnly
+                                isReadOnly={!isEdit}
+                                isRequired
                             />
                             <Controller
                                 control={control}
                                 name={'price'}
-                                render={({ field: { name, value } }) => (
+                                render={({ field: { value, ...rest } }) => (
                                     <InputComponent
                                         type={'text'}
                                         as={NumberFormatBase}
                                         format={(num: string) =>
-                                            monetaryFormat(num, true)
+                                            monetaryFormat(num, !isEdit)
                                         }
+                                        value={!isEdit ? value : value * 100}
                                         label={'Valor'}
-                                        isReadOnly
-                                        name={name}
-                                        value={value}
+                                        isReadOnly={!isEdit}
+                                        isAllowed={(values) => {
+                                            const { floatValue } = values
+                                            const MAX_LIMIT = 9999.99
+                                            return (
+                                                floatValue! / 10000 <= MAX_LIMIT
+                                            )
+                                        }}
+                                        isRequired
+                                        isInvalid={errors.price ? true : false}
+                                        errors={errors.price}
+                                        {...rest}
                                     />
                                 )}
                             />
@@ -189,19 +277,35 @@ const DebtInfo = () => {
                                 isReadOnly
                             />
                             <InputComponent
-                                type={'text'}
+                                type={'date'}
                                 {...register('payday')}
                                 label={'Data de pagamento'}
-                                isReadOnly
+                                isReadOnly={!isEdit}
+                                isRequired
                             />
                         </FormInputsWrapper>
                         <FormInputsWrapper columns={2}>
-                            <InputComponent
-                                type={'text'}
-                                {...register('Creditor.name')}
+                            <SelectComponent
                                 label={'Credor'}
-                                isReadOnly
-                            />
+                                {...register('Creditor.id')}
+                                isInvalid={errors.Creditor?.id ? true : false}
+                                errors={errors.Creditor?.id}
+                                isReadOnly={!isEdit}
+                                isRequired
+                            >
+                                {creditorData?.rows ? (
+                                    creditorData.rows.map((creditor) => (
+                                        <option
+                                            key={creditor.id}
+                                            value={creditor.id}
+                                        >
+                                            {creditor.name}
+                                        </option>
+                                    ))
+                                ) : (
+                                    <></>
+                                )}
+                            </SelectComponent>
                             <InputComponent
                                 type={'text'}
                                 {...register('Creditor.creditor_type')}
@@ -210,11 +314,20 @@ const DebtInfo = () => {
                             />
                         </FormInputsWrapper>
                         <FormInputsWrapper columns={1}>
-                            <FormControl isReadOnly>
+                            <FormControl isReadOnly={!isEdit}>
                                 <FormLabel>Descrição:</FormLabel>
                                 <Textarea {...register('description')} />
                             </FormControl>
                         </FormInputsWrapper>
+                        <HStack justifyContent={'end'} w={'100%'} pt={4}>
+                            {isEdit ? (
+                                <Button colorScheme={'green'} type={'submit'}>
+                                    Concluir edição
+                                </Button>
+                            ) : (
+                                <></>
+                            )}
+                        </HStack>
                     </VStack>
                 </>
             ) : (
