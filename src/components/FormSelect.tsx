@@ -10,7 +10,7 @@ import { FieldError } from 'react-hook-form'
 interface IPropsFormInput {
     label: string
     errors?: FieldError
-    isInvalid: boolean
+    isInvalid?: boolean
     isRequired?: boolean
     isReadOnly?: boolean
     children: ReactNode
@@ -23,7 +23,7 @@ const FormSelect: ForwardRefRenderFunction<
     {
         label,
         errors,
-        isInvalid,
+        isInvalid = false,
         isRequired = false,
         isReadOnly = false,
         children,

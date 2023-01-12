@@ -5,7 +5,6 @@ import {
     ModalOverlay,
     ModalHeader,
     ModalBody,
-    ModalCloseButton,
     ModalContent,
 } from '@chakra-ui/react'
 
@@ -23,7 +22,6 @@ const ModalComponent = ({
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>{modalTitle}</ModalHeader>
-                    <ModalCloseButton />
                     <ModalBody>{children}</ModalBody>
                 </ModalContent>
             </Modal>

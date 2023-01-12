@@ -4,6 +4,7 @@ import { getDebts } from './debtsQueries'
 import {
     GetCreditorData,
     GetCreditorsData,
+    PatchCreditorData,
 } from './interfaces/creditorsQueriesInterface'
 import { PostCreditorsData } from './interfaces/creditorsQueriesInterface'
 
@@ -46,6 +47,12 @@ export const useCreditor = (debtor_id: number, creditor_id: number) => {
 export const useMutationCreditors = () => {
     return useMutation((data: PostCreditorsData) => {
         return api.post<PostCreditorsData>('creditor', data)
+    })
+}
+
+export const useMutationCreditor = (debtorId: number, creditorId: number) =>{
+    return useMutation((data: PatchCreditorData) =>{
+        return api.patch<PatchCreditorData>(`creditor/${debtorId}/${creditorId}/`, data)
     })
 }
 

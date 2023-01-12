@@ -24,3 +24,9 @@ export interface PostCreditorsData {
     creditor_type: 'Fisico' | 'Juridico'
     DebtorId: number
 }
+
+export interface PatchCreditorData{
+    name: string
+    email?: string
+    creditor_type: 'Fisico' | 'Juridico'
+}

@@ -1,6 +1,15 @@
-import { Stack, Td, Text, Tr, useDisclosure } from '@chakra-ui/react'
+import {
+    Button,
+    HStack,
+    Icon,
+    Stack,
+    Td,
+    Text,
+    Tr,
+    useDisclosure,
+} from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import {  useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import DataInfoCard from '../../components/DataInfoCard'
 import InfoCard from '../../components/InfoCard'
 import {
@@ -14,6 +23,8 @@ import MonetaryText from '../../components/MonetaryText'
 import SpinnerSection from '../../components/SpinnerSection'
 import SectionAlert from '../../components/SectionAlert'
 import { useOutlet } from '../../components/useOutletContext'
+import { AiFillEdit } from 'react-icons/ai'
+import CreditorsFormEdit from './CreditorsFormEdit'
 
 const CreditorsInfo = () => {
     const auth = useAuth()
@@ -31,7 +42,12 @@ const CreditorsInfo = () => {
         parseInt(id!)
     )
     const { isOpen, onClose, onOpen } = useDisclosure()
-    const {submitLinks} = useOutlet()
+    const {
+        isOpen: isOpenEditModal,
+        onClose: onCloseEditModal,
+        onOpen: onOpenEditModal,
+    } = useDisclosure()
+    const { submitLinks } = useOutlet()
 
     useEffect(() => {
         if (submitLinks && id) {
@@ -58,9 +74,22 @@ const CreditorsInfo = () => {
                 onClose={onClose}
                 creditorId={parseInt(id!)}
             />
-
+            <CreditorsFormEdit
+                isOpen={isOpenEditModal}
+                onClose={onCloseEditModal}
+            />
             {debtsData && !isError ? (
                 <>
+                    <HStack p={2} boxShadow={'base'} mb={2}>
+                        <Button
+                            colorScheme={'orange'}
+                            leftIcon={<Icon as={AiFillEdit} />}
+                            size={'sm'}
+                            onClick={onOpenEditModal}
+                        >
+                            Editar informações do credor
+                        </Button>
+                    </HStack>
                     <Stack
                         boxShadow={'lg'}
                         w={'100%'}
