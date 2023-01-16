@@ -1,9 +1,11 @@
 import { Creditor } from './creditorsQueriesInterface'
 
+export type StatusType = 'Paga' | 'Devendo' | 'Cancelada'
+
 interface Debt {
     id: number
     title: string
-    status: string
+    status: StatusType
     price: number
     payday: Date
     description: string
@@ -16,8 +18,6 @@ export interface GetDebtsData {
 }
 
 export interface GetDebtData extends Debt {}
-
-export type StatusType = 'Paga' | 'Devendo' | 'Cancelada'
 
 export interface PostDebtsData {
     title: string

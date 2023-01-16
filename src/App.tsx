@@ -23,7 +23,11 @@ const App = () => {
                     <RouterProvider router={routers} />
                 </AuthProvider>
             </ChakraProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
+            {process.env.NODE_ENV !== 'production' ? (
+                <ReactQueryDevtools initialIsOpen={false} />
+            ) : (
+                <></>
+            )}
         </QueryClientProvider>
     )
 }

@@ -46,6 +46,7 @@ const CreditorsFormSignUp = ({ isOpen, onClose }: IPropsCreditorsForm) => {
         try {
             await mutateAsync(data)
             queryClient.invalidateQueries('creditors')
+            queryClient.invalidateQueries('creditors_select')
             closeModal()
             toast('Credor cadastrado com sucesso', 'success')
         } catch (err) {

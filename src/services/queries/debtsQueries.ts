@@ -5,12 +5,14 @@ import {
     GetDebtsData,
     PostDebtsData,
     PatchDebtData,
+    StatusType,
 } from './interfaces/debtsQueriesInterface'
 
 export const getDebts = async (
     debtorId: number,
     page: number,
     limit: number,
+    statusFilter: StatusType | '',
     creditor_id?: number
 ) => {
     const {
@@ -18,13 +20,18 @@ export const getDebts = async (
     } = await api.get<GetDebtsData>(
         `debts/${debtorId}/${
             creditor_id ? String(creditor_id) + '/' : ''
-        }?limit=${limit}&offset=${(page - 1) * limit}`
+        }?limit=${limit}&offset=${(page - 1) * limit}&status=${statusFilter}`
     )
     return { count, rows }
 }
 
-export const useDebts = (debtorId: number, page: number, limit: number) => {
-    return useQuery(['debts', page], () => getDebts(debtorId, page, limit), {
+export const useDebts = (
+    debtorId: number,
+    page: number,
+    limit: number,
+    statusFilter: StatusType | ''
+) => {
+    return useQuery(['debts', page, statusFilter], () => getDebts(debtorId, page, limit, statusFilter), {
         keepPreviousData: true,
     })
 }

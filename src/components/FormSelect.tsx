@@ -13,6 +13,9 @@ interface IPropsFormInput {
     isInvalid?: boolean
     isRequired?: boolean
     isReadOnly?: boolean
+    placeholder?: boolean
+    size?: 'lg' | 'md' | 'sm'
+    onChangeStatus?: (e: any) => void
     children: ReactNode
 }
 
@@ -26,6 +29,9 @@ const FormSelect: ForwardRefRenderFunction<
         isInvalid = false,
         isRequired = false,
         isReadOnly = false,
+        placeholder = true,
+        size = 'md',
+        onChangeStatus,
         children,
         ...rest
     },
@@ -35,11 +41,13 @@ const FormSelect: ForwardRefRenderFunction<
         <FormControl isInvalid={isInvalid} isRequired={isRequired}>
             <FormLabel>{label}</FormLabel>
             <Select
-                placeholder="Selecione uma opção"
+                placeholder={placeholder ? "Selecione uma opção" : ""}
                 ref={ref}
+                size={size}
                 {...rest}
                 required={false}
                 pointerEvents={isReadOnly ? 'none' : 'auto'}
+                onChange={onChangeStatus}
             >
                 {children}
             </Select>

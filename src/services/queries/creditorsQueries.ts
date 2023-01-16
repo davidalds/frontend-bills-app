@@ -63,6 +63,6 @@ export const useCreditorDebts = (
     creditor_id: number
 ) => {
     return useQuery(['creditor_debts', creditor_id, page], () =>
-        getDebts(debtor_id, page, limit, creditor_id)
+        getDebts(debtor_id, page, limit, '',creditor_id)
     )
 }

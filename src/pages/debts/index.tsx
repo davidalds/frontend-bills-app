@@ -20,17 +20,23 @@ import { Link } from 'react-router-dom'
 import { AiOutlineEye } from 'react-icons/ai'
 import { dateFormat } from '../../resources/formatFunctions'
 import { useOutlet } from '../../components/useOutletContext'
+import FilterSection from '../../components/FilterSection'
+import { StatusType } from '../../services/queries/interfaces/debtsQueriesInterface'
+import { useQueryClient } from 'react-query'
 
 const DebtsList = () => {
     const auth = useAuth()
     const limit = 10
     const [page, setPage] = useState<number>(1)
+    const [statusFilter, setStatusFilter] = useState<StatusType | ''>('')
     const { data, isError, isLoading, isPreviousData } = useDebts(
         auth.userData.id,
         page,
-        limit
+        limit,
+        statusFilter
     )
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const queryclient = useQueryClient()
 
     const { submitLinks } = useOutlet()
 
@@ -70,6 +76,15 @@ const DebtsList = () => {
         return false
     }, [])
 
+    const changeStatus = useCallback(
+        (value: StatusType) => {
+            setStatusFilter(value)
+            queryclient.invalidateQueries('debts')
+            setPage(1)
+        },
+        [queryclient]
+    )
+
     return (
         <>
             <DebtsFormSignUp isOpen={isOpen} onClose={onClose} />
@@ -88,53 +103,72 @@ const DebtsList = () => {
                 alertMsg={'Ocorreu um erro ao carregar dívidas'}
             />
             {data && !isError ? (
-                <TableComponent
-                    previousPage={(newPage) => setPage(newPage)}
-                    nextPage={(newPage) => setPage(newPage)}
-                    isPreviousData={isPreviousData}
-                    page={page}
-                    limit={limit}
-                    dataCount={data.count}
-                    dataTitle={'dívidas'}
-                    tableButtonLabel={'dívida'}
-                    openModal={onOpen}
-                >
-                    {data.rows.map(
-                        ({ id, title, status, payday, Creditor: { name } }) => (
-                            <Tr key={id}>
-                                <Td>{title}</Td>
-                                <Td>{name}</Td>
-                                <Td>{dateFormat(payday)}</Td>
-                                <Td>{status}</Td>
-                                <Td>
-                                    {compareDates(dateFormat(payday)) ? (
-                                        <Tag colorScheme={'red'}>Atraso</Tag>
+                <>
+                    <FilterSection onChangeStatus={changeStatus} />
+                    <TableComponent
+                        previousPage={(newPage) => setPage(newPage)}
+                        nextPage={(newPage) => setPage(newPage)}
+                        isPreviousData={isPreviousData}
+                        page={page}
+                        limit={limit}
+                        dataCount={data.count}
+                        dataTitle={'dívidas'}
+                        tableButtonLabel={'dívida'}
+                        openModal={onOpen}
+                    >
+                        {data.rows.map(
+                            ({
+                                id,
+                                title,
+                                status,
+                                payday,
+                                Creditor: { name },
+                            }) => (
+                                <Tr key={id}>
+                                    <Td>{title}</Td>
+                                    <Td>{name}</Td>
+                                    <Td>{dateFormat(payday)}</Td>
+                                    <Td>{status}</Td>
+                                    {status === 'Devendo' ? (
+                                        <Td>
+                                            {compareDates(
+                                                dateFormat(payday)
+                                            ) ? (
+                                                <Tag colorScheme={'red'}>
+                                                    Atraso
+                                                </Tag>
+                                            ) : (
+                                                <Tag colorScheme={'green'}>
+                                                    Em dia
+                                                </Tag>
+                                            )}
+                                        </Td>
                                     ) : (
-                                        <Tag colorScheme={'green'}>Em dia</Tag>
+                                        <Td></Td>
                                     )}
-                                </Td>
-                                <Td>
-                                    <HStack
-                                        justifyContent={'center'}
-                                        spacing="8px"
-                                    >
-                                        <Button
-                                            as={Link}
-                                            to={`${id}`}
-                                            leftIcon={
-                                                <Icon as={AiOutlineEye} />
-                                            }
-                                            size={'sm'}
-                                            colorScheme={'green'}
+                                    <Td>
+                                        <HStack
+                                            justifyContent={'center'}
+                                            spacing="8px"
                                         >
-                                            Ver
-                                        </Button>
-                                    </HStack>
-                                </Td>
-                            </Tr>
-                        )
-                    )}
-                </TableComponent>
+                                            <Button
+                                                as={Link}
+                                                to={`${id}`}
+                                                leftIcon={
+                                                    <Icon as={AiOutlineEye} />
+                                                }
+                                                size={'sm'}
+                                                colorScheme={'green'}
+                                            >
+                                                Ver
+                                            </Button>
+                                        </HStack>
+                                    </Td>
+                                </Tr>
+                            )
+                        )}
+                    </TableComponent>
+                </>
             ) : (
                 <></>
             )}

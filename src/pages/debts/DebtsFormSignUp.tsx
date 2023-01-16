@@ -6,7 +6,9 @@ import {
     FormErrorMessage,
     FormLabel,
     HStack,
+    Icon,
     Textarea,
+    useDisclosure,
     VStack,
 } from '@chakra-ui/react'
 
@@ -32,6 +34,8 @@ import {
     monetaryUnformat,
 } from '../../resources/formatFunctions'
 import { NumberFormatBase } from 'react-number-format'
+import { AiOutlinePlus } from 'react-icons/ai'
+import CreditorsFormSignUp from '../creditors/CreditorsFormSignUp'
 
 const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
     const {
@@ -46,6 +50,12 @@ const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
 
     const auth = useAuth()
     const queryClient = useQueryClient()
+
+    const {
+        isOpen: isOpenFormCreditor,
+        onOpen: onOpenFormCreditor,
+        onClose: onCloseFormCreditor,
+    } = useDisclosure()
 
     const { data } = useCreditorsSelect(auth.userData.id)
     const { mutateAsync } = useMutationDebts()
@@ -79,112 +89,131 @@ const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
     }
 
     return (
-        <ModalComponent
-            modalTitle={'Cadastrar nova dívida'}
-            isOpen={isOpen}
-            onClose={onClose}
-        >
-            <VStack as={'form'} onSubmit={handleSubmit(submit)}>
-                <input
-                    type="hidden"
-                    {...register('DebtorId')}
-                    value={auth.userData.id}
-                />
-                <FormInputsWrapper columns={2}>
-                    <InputComponent
-                        isInvalid={errors.title ? true : false}
-                        type={'text'}
-                        label={'Título:'}
-                        {...register('title')}
-                        errors={errors.title}
-                        isRequired
+        <>
+            <CreditorsFormSignUp
+                isOpen={isOpenFormCreditor}
+                onClose={onCloseFormCreditor}
+            />
+            <ModalComponent
+                modalTitle={'Cadastrar nova dívida'}
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <VStack as={'form'} onSubmit={handleSubmit(submit)}>
+                    <input
+                        type="hidden"
+                        {...register('DebtorId')}
+                        value={auth.userData.id}
                     />
-                    <Controller
-                        name={'price'}
-                        control={control}
-                        render={({ field }) => (
-                            <InputComponent
-                                type={'text'}
-                                label={'Valor:'}
-                                as={NumberFormatBase}
-                                format={(num: string) =>
-                                    monetaryFormat(num, false)
-                                }
-                                isInvalid={errors.price ? true : false}
-                                errors={errors.price}
-                                // Roda o onChange e modifica os valores enquanto satisfazer a condição criada
-                                isAllowed={(values) => {
-                                    const { floatValue } = values
-                                    const MAX_LIMIT = 9999.99
-                                    return floatValue! / 10000 <= MAX_LIMIT
-                                }}
-                                isRequired
-                                {...field}
-                            />
-                        )}
-                    />
-                </FormInputsWrapper>
-                <FormInputsWrapper columns={creditorId ? 1 : 2}>
-                    <InputComponent
-                        isInvalid={errors.payday ? true : false}
-                        type={'date'}
-                        label={'Data de pagamento:'}
-                        {...register('payday')}
-                        errors={errors.payday}
-                        isRequired
-                    />
-                    {creditorId ? (
-                        <input
-                            type={'hidden'}
-                            value={creditorId}
-                            {...register('CreditorId')}
-                        />
-                    ) : (
-                        <SelectComponent
-                            isInvalid={errors.CreditorId ? true : false}
-                            label={'Credor'}
-                            {...register('CreditorId')}
-                            errors={errors.CreditorId}
+                    <FormInputsWrapper columns={2}>
+                        <InputComponent
+                            isInvalid={errors.title ? true : false}
+                            type={'text'}
+                            label={'Título:'}
+                            {...register('title')}
+                            errors={errors.title}
                             isRequired
-                        >
-                            {data?.rows ? (
-                                data.rows.map((creditor) => (
-                                    <option
-                                        value={creditor.id}
-                                        key={creditor.id}
-                                    >
-                                        {creditor.name}
-                                    </option>
-                                ))
-                            ) : (
-                                <></>
+                        />
+                        <Controller
+                            name={'price'}
+                            control={control}
+                            render={({ field }) => (
+                                <InputComponent
+                                    type={'text'}
+                                    label={'Valor:'}
+                                    as={NumberFormatBase}
+                                    format={(num: string) =>
+                                        monetaryFormat(num, false)
+                                    }
+                                    isInvalid={errors.price ? true : false}
+                                    errors={errors.price}
+                                    // Roda o onChange e modifica os valores enquanto satisfazer a condição criada
+                                    isAllowed={(values) => {
+                                        const { floatValue } = values
+                                        const MAX_LIMIT = 9999.99
+                                        return floatValue! / 10000 <= MAX_LIMIT
+                                    }}
+                                    isRequired
+                                    {...field}
+                                />
                             )}
-                        </SelectComponent>
-                    )}
-                </FormInputsWrapper>
-                <FormInputsWrapper columns={1}>
-                    <FormControl isInvalid={errors.description ? true : false}>
-                        <FormLabel>Descrição:</FormLabel>
-                        <Textarea {...register('description')} />
-                        <FormErrorMessage>
-                            {errors.description?.message}
-                        </FormErrorMessage>
-                    </FormControl>
-                </FormInputsWrapper>
-                <HStack justifyContent={'end'} w={'100%'} pt={4}>
-                    <Button
-                        colorScheme={'gray'}
-                        type={'button'}
-                        onClick={closeModal}
-                    >
-                        Fechar
-                    </Button>
-                    <Button colorScheme={'green'} type={'submit'}>
-                        Cadastrar
-                    </Button>
-                </HStack>
-            </VStack>
-        </ModalComponent>
+                        />
+                    </FormInputsWrapper>
+                    <FormInputsWrapper columns={creditorId ? 1 : 2}>
+                        <InputComponent
+                            isInvalid={errors.payday ? true : false}
+                            type={'date'}
+                            label={'Data de pagamento:'}
+                            {...register('payday')}
+                            errors={errors.payday}
+                            isRequired
+                        />
+                        {creditorId ? (
+                            <input
+                                type={'hidden'}
+                                value={creditorId}
+                                {...register('CreditorId')}
+                            />
+                        ) : (
+                            <HStack spacing={2}>
+                                <SelectComponent
+                                    isInvalid={errors.CreditorId ? true : false}
+                                    label={'Credor'}
+                                    {...register('CreditorId')}
+                                    errors={errors.CreditorId}
+                                    isRequired
+                                >
+                                    {data?.rows ? (
+                                        data.rows.map((creditor) => (
+                                            <option
+                                                value={creditor.id}
+                                                key={creditor.id}
+                                            >
+                                                {creditor.name}
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <></>
+                                    )}
+                                </SelectComponent>
+                                <Button
+                                    title="Adicionar credor"
+                                    colorScheme={'green'}
+                                    variant={'outline'}
+                                    onClick={onOpenFormCreditor}
+                                    alignSelf={'end'}
+                                >
+                                    <Icon as={AiOutlinePlus} />
+                                </Button>
+                            </HStack>
+                        )}
+                    </FormInputsWrapper>
+                    <FormInputsWrapper columns={1}>
+                        <FormControl
+                            isInvalid={errors.description ? true : false}
+                        >
+                            <FormLabel>Descrição:</FormLabel>
+                            <Textarea {...register('description')} />
+                            <FormErrorMessage>
+                                {errors.description?.message}
+                            </FormErrorMessage>
+                        </FormControl>
+                    </FormInputsWrapper>
+                    <HStack justifyContent={'end'} w={'100%'} pt={4}>
+                        <Button
+                            colorScheme={'gray'}
+                            type={'button'}
+                            onClick={closeModal}
+                        >
+                            Fechar
+                        </Button>
+                        <Button colorScheme={'green'} type={'submit'}>
+                            Cadastrar
+                        </Button>
+                    </HStack>
+                </VStack>
+            </ModalComponent>
+        </>
     )
 }
 
