@@ -18,6 +18,7 @@ interface IPropsFormInput {
     format?: any
     isRequired?: boolean
     isReadOnly?: boolean
+    placeholder?: string
     as?: any
     value?: any
     isAllowed?: (value: NumberFormatValues) => boolean;
@@ -35,6 +36,7 @@ const FormInput: ForwardRefRenderFunction<HTMLInputElement, IPropsFormInput> = (
         isReadOnly = false,
         as,
         value,
+        placeholder,
         isAllowed,
         ...rest
     },
@@ -44,6 +46,7 @@ const FormInput: ForwardRefRenderFunction<HTMLInputElement, IPropsFormInput> = (
         <FormControl isInvalid={isInvalid} isRequired={isRequired} isReadOnly={isReadOnly}>
             <FormLabel>{label}</FormLabel>
             <Input
+                placeholder={placeholder ? placeholder : ""}
                 ref={ref}
                 type={type}
                 name={name}

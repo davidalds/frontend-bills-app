@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from 'react-query'
 import api from '..'
+import { PostChangePasswordData } from './interfaces/changePasswordQueriesInterface'
 import { PostDebtorData } from './interfaces/debtorQueriesInterface'
 
 interface GetDebtorData {
@@ -12,9 +13,21 @@ interface GetDebtorData {
 
 const getDebtor = async (debtorId: number) => {
     const {
-        data: { count_creditors, count_debts, total_price_debts, payed_debts, open_debts },
+        data: {
+            count_creditors,
+            count_debts,
+            total_price_debts,
+            payed_debts,
+            open_debts,
+        },
     } = await api.get<GetDebtorData>(`debtor/${debtorId}`)
-    return { count_creditors, count_debts, total_price_debts, payed_debts, open_debts}
+    return {
+        count_creditors,
+        count_debts,
+        total_price_debts,
+        payed_debts,
+        open_debts,
+    }
 }
 
 export const useDebtor = (debtorId: number) => {
@@ -24,5 +37,17 @@ export const useDebtor = (debtorId: number) => {
 export const useMutationDebtor = () => {
     return useMutation((data: PostDebtorData) => {
         return api.post<PostDebtorData>('debtor', data)
+    })
+}
+
+export const useMutationRecoverPassword = () => {
+    return useMutation((data: { email: string }) => {
+        return api.post<{ email: string }>('recover', data)
+    })
+}
+
+export const useMutationChangePassword = () => {
+    return useMutation((data: PostChangePasswordData) => {
+        return api.post<PostChangePasswordData>('changePassword', data)
     })
 }

@@ -92,14 +92,12 @@ const LoginPage = () => {
                             isRequired
                         />
                     </FormInputsWrapper>
-                    <HStack justifyContent={'space-between'} w={'100%'}>
-                        <ChakraLink
-                            as={Link}
-                            color="teal.500"
-                            to={'/cadastrar'}
-                        >
-                            Cadastre-se aqui
+                    <HStack justify={'flex-start'} w={'100%'} pb={1}>
+                        <ChakraLink as={Link} color={'teal'} to={'/recuperar'}>
+                            Esqueceu a senha?
                         </ChakraLink>
+                    </HStack>
+                    <VStack w={'100%'} align={'stretch'}>
                         <Button
                             type={'submit'}
                             isLoading={isLoading}
@@ -107,7 +105,15 @@ const LoginPage = () => {
                         >
                             Entrar
                         </Button>
-                    </HStack>
+                        <Button
+                            type={'button'}
+                            colorScheme={'gray'}
+                            as={Link}
+                            to={'/cadastrar'}
+                        >
+                            Criar nova conta
+                        </Button>
+                    </VStack>
                 </VStack>
             </Box>
         </Center>

@@ -10,7 +10,7 @@ const schema = yup.object().shape({
     confirmar_senha: yup
         .string()
         .required('Confirmar senha é obrigatório')
-        .test('isEqualPasswords', 'Senhas diferentes', (value, context) => {
+        .test('isPasswordEqual', 'Senhas diferentes', (value, context) => {
             return value === context.parent.password
         })
 })

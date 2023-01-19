@@ -17,12 +17,16 @@ import CreditorsInfo from './pages/creditors/CreditorsInfo'
 import DebtInfo from './pages/debts/DebtInfo'
 import DebtorInfo from './pages/debtor/DebtorInfo'
 import SignUpPage from './pages/register'
+import RecoverPage from './pages/recover'
+import ChangePasswordPage from './pages/change'
 
 const routers = createBrowserRouter(
     createRoutesFromElements(
         <>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/cadastrar" element={<SignUpPage />} />
+            <Route path="/recuperar" element={<RecoverPage />}/>
+            <Route path="/mudarSenha/:token" element={<ChangePasswordPage />} />
             <Route
                 path="/"
                 element={
