@@ -1,47 +1,53 @@
-import React from 'react'
+import React, { lazy } from 'react'
 
 import {
     createBrowserRouter,
     createRoutesFromElements,
     Route,
 } from 'react-router-dom'
-import Layout from './components/Layout'
 
-import Home from './pages/home'
-import CreditorsList from './pages/creditors'
-import DebtsList from './pages/debts'
-import ErrorPage from './components/ErrorPage'
-import LoginPage from './pages/login'
 import RequireAuth from './pages/login/authentication/RequireAuth'
-import CreditorsInfo from './pages/creditors/CreditorsInfo'
-import DebtInfo from './pages/debts/DebtInfo'
-import DebtorInfo from './pages/debtor/DebtorInfo'
-import SignUpPage from './pages/register'
-import RecoverPage from './pages/recover'
-import ChangePasswordPage from './pages/change'
+
+const LayoutImport = lazy(() => import('./components/Layout'))
+const LoginPageImport = lazy(() => import('./pages/login'))
+const SignUpPageImport = lazy(() => import('./pages/register'))
+const RecoverPageImport = lazy(() => import('./pages/recover'))
+const ChangePasswordPageImport = lazy(() => import('./pages/change'))
+const HomeImport = lazy(() => import('./pages/home'))
+const CreditorsListImport = lazy(() => import('./pages/creditors'))
+const CreditorsInfoImport = lazy(
+    () => import('./pages/creditors/CreditorsInfo')
+)
+const DebtsListImport = lazy(() => import('./pages/debts'))
+const DebtInfoImport = lazy(() => import('./pages/debts/DebtInfo'))
+const DebtorInfoImport = lazy(() => import('./pages/debtor/DebtorInfo'))
+const ErrorPageImport = lazy(() => import('./components/ErrorPage'))
 
 const routers = createBrowserRouter(
     createRoutesFromElements(
         <>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/cadastrar" element={<SignUpPage />} />
-            <Route path="/recuperar" element={<RecoverPage />}/>
-            <Route path="/mudarSenha/:token" element={<ChangePasswordPage />} />
+            <Route path="/login" element={<LoginPageImport />} />
+            <Route path="/cadastrar" element={<SignUpPageImport />} />
+            <Route path="/recuperar" element={<RecoverPageImport />} />
+            <Route
+                path="/mudarSenha/:token"
+                element={<ChangePasswordPageImport />}
+            />
             <Route
                 path="/"
                 element={
                     <RequireAuth>
-                        <Layout />
+                        <LayoutImport />
                     </RequireAuth>
                 }
-                errorElement={<ErrorPage />}
+                errorElement={<ErrorPageImport />}
             >
-                <Route index element={<Home />} />
-                <Route path="/credores" element={<CreditorsList />} />
-                <Route path="/credores/:id" element={<CreditorsInfo />} />
-                <Route path="/dividas" element={<DebtsList />} />
-                <Route path="/dividas/:id" element={<DebtInfo />} />
-                <Route path="/debtor" element={<DebtorInfo />} />
+                <Route index element={<HomeImport />} />
+                <Route path="/credores" element={<CreditorsListImport />} />
+                <Route path="/credores/:id" element={<CreditorsInfoImport />} />
+                <Route path="/dividas" element={<DebtsListImport />} />
+                <Route path="/dividas/:id" element={<DebtInfoImport />} />
+                <Route path="/debtor" element={<DebtorInfoImport />} />
             </Route>
         </>
     )
