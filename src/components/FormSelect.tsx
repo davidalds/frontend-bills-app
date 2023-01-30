@@ -10,12 +10,12 @@ import { FieldError } from 'react-hook-form'
 interface IPropsFormInput {
     label: string
     errors?: FieldError
+    name: string
     isInvalid?: boolean
     isRequired?: boolean
     isReadOnly?: boolean
     placeholder?: boolean
     size?: 'lg' | 'md' | 'sm'
-    onChangeStatus?: (e: any) => void
     children: ReactNode
 }
 
@@ -26,12 +26,12 @@ const FormSelect: ForwardRefRenderFunction<
     {
         label,
         errors,
+        name,
         isInvalid = false,
         isRequired = false,
         isReadOnly = false,
         placeholder = true,
         size = 'md',
-        onChangeStatus,
         children,
         ...rest
     },
@@ -44,10 +44,10 @@ const FormSelect: ForwardRefRenderFunction<
                 placeholder={placeholder ? "Selecione uma opção" : ""}
                 ref={ref}
                 size={size}
+                name={name}
                 {...rest}
                 required={false}
                 pointerEvents={isReadOnly ? 'none' : 'auto'}
-                onChange={onChangeStatus}
             >
                 {children}
             </Select>

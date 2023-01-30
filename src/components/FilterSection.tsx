@@ -1,20 +1,31 @@
 import { Box, HStack } from '@chakra-ui/react'
-import React, {memo} from 'react'
+import React, { memo, useEffect } from 'react'
 import { StatusType } from '../services/queries/interfaces/debtsQueriesInterface'
 import SelectComponent from './FormSelect'
+import { useForm } from 'react-hook-form'
 
-interface IPropsFilter{
+interface IPropsFilter {
     onChangeStatus: (e: StatusType) => void
 }
 
-const FilterSection = ({onChangeStatus}: IPropsFilter) => {
+const FilterSection = ({ onChangeStatus }: IPropsFilter) => {
+    const { register, watch, getValues } = useForm<{ statusType: StatusType }>()
+    const watchStatusField = watch('statusType')
+
+    useEffect(() => {
+        onChangeStatus(getValues('statusType'))
+    }, [getValues, onChangeStatus, watchStatusField])
+
     return (
         <HStack mb={4} boxShadow={'base'} spacing={2} p={2}>
             <Box>
-                <SelectComponent label={'Status'} size={'sm'} placeholder={false} onChangeStatus={(e) => onChangeStatus(e.target.value)}>
-                    <option value="">
-                        Todos
-                    </option>
+                <SelectComponent
+                    {...register('statusType')}
+                    label={'Status'}
+                    size={'sm'}
+                    placeholder={false}
+                >
+                    <option value="">Todos</option>
                     <option value="Devendo">Devendo</option>
                     <option value="Paga">Paga</option>
                     <option value="Cancelada">Cancelada</option>
@@ -24,4 +35,4 @@ const FilterSection = ({onChangeStatus}: IPropsFilter) => {
     )
 }
 
-export default memo(FilterSection) 
+export default memo(FilterSection)
