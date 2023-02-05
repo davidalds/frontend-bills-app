@@ -39,7 +39,7 @@ import { useOutlet } from '../../components/useOutletContext'
 import SelectComponent from '../../components/FormSelect'
 import { useCreditorsSelect } from '../../services/queries/creditorsQueries'
 import { yupResolver } from '@hookform/resolvers/yup'
-import schema from './schema/debtsFormSchema'
+import schema from './schema/debtsFormSchemaEdit'
 
 const DebtInfo = () => {
     const queryClient = useQueryClient()
@@ -73,9 +73,16 @@ const DebtInfo = () => {
 
     useEffect(() => {
         if (data) {
-            Object.entries(data).map(([key, value]) =>
-                setValue(key as any, value)
-            )
+            Object.entries(data).forEach(([key, value]) => {
+                if (key === 'Creditor') {
+                    setValue(key as any, value || { id: '' })
+                } else if(key === "price") {
+                    // multiplica por 100 para as casas decimais ficarem de acordo quando for utilizar a máscara monetária
+                    setValue(key as any, value * 100)
+                }else{
+                    setValue(key as any, value)
+                }
+            })
         }
     }, [data, setValue])
 
@@ -240,18 +247,20 @@ const DebtInfo = () => {
                                 label={'Título'}
                                 isReadOnly={!isEdit}
                                 isRequired
+                                isInvalid={errors.title ? true : false}
+                                errors={errors.title}
                             />
                             <Controller
                                 control={control}
                                 name={'price'}
-                                render={({ field: { value, ...rest } }) => (
+                                render={({ field }) => (
                                     <InputComponent
+                                        {...field}
                                         type={'text'}
                                         as={NumberFormatBase}
                                         format={(num: string) =>
-                                            monetaryFormat(num, !isEdit)
+                                            monetaryFormat(num, false)
                                         }
-                                        value={!isEdit ? value : value * 100}
                                         label={'Valor'}
                                         isReadOnly={!isEdit}
                                         isAllowed={(values) => {
@@ -264,7 +273,6 @@ const DebtInfo = () => {
                                         isRequired
                                         isInvalid={errors.price ? true : false}
                                         errors={errors.price}
-                                        {...rest}
                                     />
                                 )}
                             />
@@ -282,6 +290,8 @@ const DebtInfo = () => {
                                 label={'Data de pagamento'}
                                 isReadOnly={!isEdit}
                                 isRequired
+                                isInvalid={errors.payday ? true : false}
+                                errors={errors.payday}
                             />
                         </FormInputsWrapper>
                         <FormInputsWrapper columns={2}>

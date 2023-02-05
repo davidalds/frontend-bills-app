@@ -125,14 +125,14 @@ const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
                                     format={(num: string) =>
                                         monetaryFormat(num, false)
                                     }
-                                    isInvalid={errors.price ? true : false}
-                                    errors={errors.price}
                                     // Roda o onChange e modifica os valores enquanto satisfazer a condição criada
                                     isAllowed={(values) => {
                                         const { floatValue } = values
                                         const MAX_LIMIT = 9999.99
                                         return floatValue! / 10000 <= MAX_LIMIT
                                     }}
+                                    isInvalid={errors.price ? true : false}
+                                    errors={errors.price}
                                     isRequired
                                     {...field}
                                 />

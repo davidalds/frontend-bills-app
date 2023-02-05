@@ -122,11 +122,11 @@ const DebtsList = () => {
                                 title,
                                 status,
                                 payday,
-                                Creditor: { name },
+                                Creditor,
                             }) => (
                                 <Tr key={id}>
                                     <Td>{title}</Td>
-                                    <Td>{name}</Td>
+                                    <Td>{Creditor?.name || "Sem credor"}</Td>
                                     <Td>{dateFormat(payday)}</Td>
                                     <Td>{status}</Td>
                                     {status === 'Devendo' ? (

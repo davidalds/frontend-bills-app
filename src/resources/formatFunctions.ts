@@ -1,6 +1,6 @@
-export const monetaryFormat = (num: string, editing: boolean) => {
-    if (!Number(num) && !editing) return ''
-    const value = editing ? Number(num) : Number(num) / 100
+export const monetaryFormat = (num: string, isPrinting: boolean) => {
+    if (!Number(num) && !isPrinting) return ''
+    const value = isPrinting ? Number(num) : Number(num) / 100
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
