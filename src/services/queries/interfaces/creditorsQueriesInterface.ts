@@ -1,10 +1,10 @@
-import { GetDebtsData } from "./debtsQueriesInterface"
+import { GetDebtsData } from './debtsQueriesInterface'
 
 export interface Creditor {
     id: number
     name: string
     email: string | null
-    creditor_type: string
+    creditor_type: 'Fisico' | 'Juridico'
 }
 
 export interface GetCreditorsData {
@@ -12,7 +12,7 @@ export interface GetCreditorsData {
     rows: Creditor[]
 }
 
-export interface GetCreditorData{
+export interface GetCreditorData {
     creditor: Creditor
     total_price_debts: number | null
     debts: GetDebtsData
@@ -25,7 +25,7 @@ export interface PostCreditorsData {
     DebtorId: number
 }
 
-export interface PatchCreditorData{
+export interface PatchCreditorData {
     name: string
     email?: string
     creditor_type: 'Fisico' | 'Juridico'

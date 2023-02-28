@@ -50,9 +50,21 @@ export const useMutationCreditors = () => {
     })
 }
 
-export const useMutationCreditor = (debtorId: number, creditorId: number) =>{
-    return useMutation((data: PatchCreditorData) =>{
-        return api.patch<PatchCreditorData>(`creditor/${debtorId}/${creditorId}/`, data)
+export const useMutationCreditor = (debtorId: number, creditorId: number) => {
+    return useMutation((data: PatchCreditorData) => {
+        return api.patch<PatchCreditorData>(
+            `creditor/${debtorId}/${creditorId}/`,
+            data
+        )
+    })
+}
+
+export const useMutationDeleteCreditor = (
+    debtorId: number,
+    creditorId: number
+) => {
+    return useMutation(() => {
+        return api.delete(`creditor/${debtorId}/${creditorId}/`)
     })
 }
 
@@ -63,6 +75,6 @@ export const useCreditorDebts = (
     creditor_id: number
 ) => {
     return useQuery(['creditor_debts', creditor_id, page], () =>
-        getDebts(debtor_id, page, limit, '',creditor_id)
+        getDebts(debtor_id, page, limit, '', creditor_id)
     )
 }

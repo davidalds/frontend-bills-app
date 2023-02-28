@@ -1,51 +1,51 @@
 import InputComponent from '../../components/FormInputs'
 import ModalComponent from '../../components/ModalComponent'
 import { useForm } from 'react-hook-form'
-
+import { Button, HStack, VStack } from '@chakra-ui/react'
 import {
     CreditorFormValues,
     IPropsCreditorsForm,
 } from './interface/creditorsFormInterface'
-import { Button, HStack, VStack } from '@chakra-ui/react'
+import { useQueryClient } from 'react-query'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '../login/authentication/useAuth'
+import { useToastAlert } from '../../components/toastAlert'
 import FormInputsWrapper from '../../components/FormInputsWrapper'
 import SelectComponent from '../../components/FormSelect'
-import { useMutationCreditor } from '../../services/queries/creditorsQueries'
-import { useAuth } from '../login/authentication/useAuth'
-import { useParams } from 'react-router-dom'
-import { useToastAlert } from '../../components/toastAlert'
-import { yupResolver } from '@hookform/resolvers/yup'
-import schema from './schema/creditorsFormSchema'
-import { useQueryClient } from 'react-query'
+import { useMutationDeleteCreditor } from '../../services/queries/creditorsQueries'
 import { useDataEntriesCreditor } from '../../hooks/useDataEntries'
 
-const CreditorsFormEdit = ({ isOpen, onClose, data }: IPropsCreditorsForm) => {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        setValue,
-    } = useForm<CreditorFormValues>({ resolver: yupResolver(schema) })
+const CreditorsFormDelete = ({
+    isOpen,
+    onClose,
+    data,
+}: IPropsCreditorsForm) => {
+    const { register, setValue, handleSubmit } = useForm<CreditorFormValues>()
 
     const queryClient = useQueryClient()
 
     const auth = useAuth()
     const { id } = useParams()
+    const navigate = useNavigate()
+
+    const { mutateAsync } = useMutationDeleteCreditor(
+        auth.userData.id,
+        parseInt(id!)
+    )
 
     // populate fields with data
     useDataEntriesCreditor(data, (k, v) => setValue(k, v))
 
-    const { mutateAsync } = useMutationCreditor(auth.userData.id, parseInt(id!))
-
     const toast = useToastAlert()
 
-    const submit = async (data: CreditorFormValues) => {
+    const submit = async () => {
         try {
-            await mutateAsync(data)
+            await mutateAsync()
             queryClient.invalidateQueries('creditor')
-            closeModal()
-            toast('Credor editado com sucesso', 'success')
+            navigate('/credores', { replace: true })
+            toast('Credor deletado com sucesso', 'success')
         } catch (err) {
-            toast('Ocorreu um erro ao editar informações do credor', 'error')
+            toast('Ocorreu um erro ao deletar credor', 'error')
         }
     }
 
@@ -55,9 +55,9 @@ const CreditorsFormEdit = ({ isOpen, onClose, data }: IPropsCreditorsForm) => {
 
     return (
         <ModalComponent
-            modalTitle={'Editar credor'}
+            modalTitle={'Deletar credor'}
             isOpen={isOpen}
-            onClose={closeModal}
+            onClose={onClose}
         >
             <VStack as={'form'} onSubmit={handleSubmit(submit)}>
                 <FormInputsWrapper columns={2}>
@@ -65,26 +65,20 @@ const CreditorsFormEdit = ({ isOpen, onClose, data }: IPropsCreditorsForm) => {
                         type={'text'}
                         {...register('name')}
                         label={'Nome:'}
-                        errors={errors.name}
-                        isInvalid={errors.name ? true : false}
-                        isRequired
+                        isReadOnly
                     />
                     <InputComponent
                         type={'email'}
                         {...register('email')}
                         label={'E-mail:'}
-                        errors={errors.email}
-                        isInvalid={errors.email ? true : false}
-                        isRequired
+                        isReadOnly
                     />
                 </FormInputsWrapper>
                 <FormInputsWrapper columns={1}>
                     <SelectComponent
                         {...register('creditor_type')}
                         label={'Tipo de credor:'}
-                        errors={errors.creditor_type}
-                        isInvalid={errors.creditor_type ? true : false}
-                        isRequired
+                        isReadOnly
                     >
                         <option value={'Fisico'}>Físico</option>
                         <option value={'Juridico'}>Jurídico</option>
@@ -98,8 +92,8 @@ const CreditorsFormEdit = ({ isOpen, onClose, data }: IPropsCreditorsForm) => {
                     >
                         Fechar
                     </Button>
-                    <Button colorScheme={'green'} type={'submit'}>
-                        Editar
+                    <Button colorScheme={'red'} type={'submit'}>
+                        Deletar credor
                     </Button>
                 </HStack>
             </VStack>
@@ -107,4 +101,4 @@ const CreditorsFormEdit = ({ isOpen, onClose, data }: IPropsCreditorsForm) => {
     )
 }
 
-export default CreditorsFormEdit
+export default CreditorsFormDelete

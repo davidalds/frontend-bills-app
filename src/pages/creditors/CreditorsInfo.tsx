@@ -8,7 +8,7 @@ import {
     Tr,
     useDisclosure,
 } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import DataInfoCard from '../../components/DataInfoCard'
 import InfoCard from '../../components/InfoCard'
@@ -24,7 +24,9 @@ import SpinnerSection from '../../components/SpinnerSection'
 import SectionAlert from '../../components/SectionAlert'
 import { useOutlet } from '../../components/useOutletContext'
 import { AiFillEdit } from 'react-icons/ai'
+import { BsFillTrashFill } from 'react-icons/bs'
 import CreditorsFormEdit from './CreditorsFormEdit'
+import CreditorsFormDelete from './CreditorsFormDelete'
 
 const CreditorsInfo = () => {
     const auth = useAuth()
@@ -46,6 +48,11 @@ const CreditorsInfo = () => {
         isOpen: isOpenEditModal,
         onClose: onCloseEditModal,
         onOpen: onOpenEditModal,
+    } = useDisclosure()
+    const {
+        isOpen: isOpenDeleteModal,
+        onClose: onCloseDeleteModal,
+        onOpen: onOpenDeleteModal,
     } = useDisclosure()
     const { submitLinks } = useOutlet()
 
@@ -77,6 +84,12 @@ const CreditorsInfo = () => {
             <CreditorsFormEdit
                 isOpen={isOpenEditModal}
                 onClose={onCloseEditModal}
+                data={data?.creditor}
+            />
+            <CreditorsFormDelete
+                isOpen={isOpenDeleteModal}
+                onClose={onCloseDeleteModal}
+                data={data?.creditor}
             />
             {debtsData && !isError ? (
                 <>
@@ -88,6 +101,14 @@ const CreditorsInfo = () => {
                             onClick={onOpenEditModal}
                         >
                             Editar informações do credor
+                        </Button>
+                        <Button
+                            colorScheme={'red'}
+                            leftIcon={<Icon as={BsFillTrashFill} />}
+                            size={'sm'}
+                            onClick={onOpenDeleteModal}
+                        >
+                            Deletar credor
                         </Button>
                     </HStack>
                     <Stack

@@ -18,7 +18,7 @@ import DebtsFormSignUp from './DebtsFormSignUp'
 import { useAuth } from '../login/authentication/useAuth'
 import { Link } from 'react-router-dom'
 import { AiOutlineEye } from 'react-icons/ai'
-import { dateFormat } from '../../resources/formatFunctions'
+import { dateFormat } from '../../utils/formatFunctions'
 import { useOutlet } from '../../components/useOutletContext'
 import FilterSection from '../../components/FilterSection'
 import { StatusType } from '../../services/queries/interfaces/debtsQueriesInterface'
@@ -117,16 +117,10 @@ const DebtsList = () => {
                         openModal={onOpen}
                     >
                         {data.rows.map(
-                            ({
-                                id,
-                                title,
-                                status,
-                                payday,
-                                Creditor,
-                            }) => (
+                            ({ id, title, status, payday, Creditor }) => (
                                 <Tr key={id}>
                                     <Td>{title}</Td>
-                                    <Td>{Creditor?.name || "Sem credor"}</Td>
+                                    <Td>{Creditor?.name || 'Sem credor'}</Td>
                                     <Td>{dateFormat(payday)}</Td>
                                     <Td>{status}</Td>
                                     {status === 'Devendo' ? (

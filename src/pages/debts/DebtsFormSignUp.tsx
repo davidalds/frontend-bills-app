@@ -29,10 +29,7 @@ import { useMutationDebts } from '../../services/queries/debtsQueries'
 import { useToastAlert } from '../../components/toastAlert'
 import { useQueryClient } from 'react-query'
 import { useAuth } from '../login/authentication/useAuth'
-import {
-    monetaryFormat,
-    monetaryUnformat,
-} from '../../resources/formatFunctions'
+import { monetaryFormat, monetaryUnformat } from '../../utils/formatFunctions'
 import { NumberFormatBase } from 'react-number-format'
 import { AiOutlinePlus } from 'react-icons/ai'
 import CreditorsFormSignUp from '../creditors/CreditorsFormSignUp'

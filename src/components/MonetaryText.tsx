@@ -1,6 +1,6 @@
 import React from 'react'
 import { ChangeMeta, NumberFormatBase } from 'react-number-format'
-import { monetaryFormat } from '../resources/formatFunctions'
+import { monetaryFormat } from '../utils/formatFunctions'
 
 interface IProps {
     value: number

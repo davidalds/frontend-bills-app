@@ -20,10 +20,7 @@ import {
 } from '../../services/queries/interfaces/debtsQueriesInterface'
 import { useCallback, useEffect } from 'react'
 import { NumberFormatBase } from 'react-number-format'
-import {
-    monetaryFormat,
-    monetaryUnformat,
-} from '../../resources/formatFunctions'
+import { monetaryFormat, monetaryUnformat } from '../../utils/formatFunctions'
 import {
     AiOutlineCheckCircle,
     AiOutlineUnlock,
@@ -76,10 +73,10 @@ const DebtInfo = () => {
             Object.entries(data).forEach(([key, value]) => {
                 if (key === 'Creditor') {
                     setValue(key as any, value || { id: '' })
-                } else if(key === "price") {
+                } else if (key === 'price') {
                     // multiplica por 100 para as casas decimais ficarem de acordo quando for utilizar a máscara monetária
                     setValue(key as any, value * 100)
-                }else{
+                } else {
                     setValue(key as any, value)
                 }
             })
