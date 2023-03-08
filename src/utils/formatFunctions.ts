@@ -4,7 +4,6 @@ export const monetaryFormat = (num: string, isPrinting: boolean) => {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
-        minimumFractionDigits: 2,
     }).format(value)
 }
 

@@ -30,7 +30,7 @@ const DebtsList = () => {
     const [page, setPage] = useState<number>(1)
     const [statusFilter, setStatusFilter] = useState<StatusType | ''>('')
     const { data, isError, isLoading, isPreviousData } = useDebts(
-        auth.userData.id,
+        auth.userData.uid,
         page,
         limit,
         statusFilter

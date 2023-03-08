@@ -34,11 +34,11 @@ const CreditorsInfo = () => {
     const [page, setPage] = useState<number>(1)
     const { id } = useParams()
     const { data, isError, isLoading } = useCreditor(
-        auth.userData.id,
+        auth.userData.uid,
         parseInt(id!)
     )
     const { data: debtsData, isPreviousData } = useCreditorDebts(
-        auth.userData.id,
+        auth.userData.uid,
         page,
         limit,
         parseInt(id!)

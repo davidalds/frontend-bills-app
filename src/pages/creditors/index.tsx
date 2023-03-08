@@ -21,7 +21,7 @@ const CreditorsList = () => {
     const limit = 10
     const [page, setPage] = useState<number>(1)
     const { data, isError, isLoading, isPreviousData } = useCreditors(
-        auth.userData.id,
+        auth.userData.uid,
         page,
         limit
     )

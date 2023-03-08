@@ -48,12 +48,17 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const handleDataUser = (token: string) => {
         if (token) {
-            const decoded_token: { id: number; name: string; email: string } =
-                jwtDecode(token)
+            const decoded_token: {
+                id: number
+                uid: string
+                name: string
+                email: string
+            } = jwtDecode(token)
             localStorage.setItem(
                 'user',
                 JSON.stringify({
                     id: decoded_token.id,
+                    uid: decoded_token.uid,
                     name: decoded_token.name,
                     email: decoded_token.email,
                 })
@@ -66,7 +71,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (user) {
             return JSON.parse(user)
         }
-        return { id: 0, name: '', email: '' }
+        return { id: 0, uid: '', name: '', email: '' }
     }
 
     const value = {

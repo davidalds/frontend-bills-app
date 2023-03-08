@@ -44,17 +44,18 @@ const DebtInfo = () => {
     const { id } = useParams()
     const toast = useToastAlert()
     const { data, isLoading, isError } = useDebt(
-        auth.userData.id,
+        auth.userData.uid,
         parseInt(id!)
     )
-    const { data: creditorData } = useCreditorsSelect(auth.userData.id)
-    const { mutateAsync } = useMutationDebt(auth.userData.id, parseInt(id!))
+    const { data: creditorData } = useCreditorsSelect(auth.userData.uid)
+    const { mutateAsync } = useMutationDebt(auth.userData.uid, parseInt(id!))
     const {
         register,
         setValue,
         control,
         handleSubmit,
-        formState: { errors },
+        resetField,
+        formState: { errors, dirtyFields },
     } = useForm<GetDebtData>({ resolver: yupResolver(schema) })
     const { submitLinks } = useOutlet()
     const [isEdit, setEdit] = useBoolean()
@@ -109,16 +110,30 @@ const DebtInfo = () => {
 
     const submit = async (data: GetDebtData) => {
         try {
-            const debtObj = {
-                CreditorId: data.Creditor.id,
-                description: data.description,
-                payday: data.payday,
-                price: parseFloat(monetaryUnformat(data.price)),
-                title: data.title,
+            let debtObj = {}
+
+            // Só lança o price pra o backend se o campo for modificado
+            if (dirtyFields.price) {
+                debtObj = {
+                    CreditorId: data.Creditor.id,
+                    description: data.description,
+                    payday: data.payday,
+                    price: parseFloat(monetaryUnformat(data.price)),
+                    title: data.title,
+                }
+            } else {
+                debtObj = {
+                    CreditorId: data.Creditor.id,
+                    description: data.description,
+                    payday: data.payday,
+                    title: data.title,
+                }
             }
             await mutateAsync({ ...debtObj })
             queryClient.invalidateQueries('debt')
             setEdit.off()
+            // reseta o isDirty no campo price
+            resetField('price')
             toast('Informações da dívida editadas com sucesso', 'success')
         } catch {
             toast('Ocorreu um erro ao editar informações da dívida', 'error')

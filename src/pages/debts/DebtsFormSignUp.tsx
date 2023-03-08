@@ -54,7 +54,7 @@ const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
         onClose: onCloseFormCreditor,
     } = useDisclosure()
 
-    const { data } = useCreditorsSelect(auth.userData.id)
+    const { data } = useCreditorsSelect(auth.userData.uid)
     const { mutateAsync } = useMutationDebts()
     const toast = useToastAlert()
 

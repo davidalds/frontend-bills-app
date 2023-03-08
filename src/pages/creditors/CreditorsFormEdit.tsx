@@ -34,7 +34,10 @@ const CreditorsFormEdit = ({ isOpen, onClose, data }: IPropsCreditorsForm) => {
     // populate fields with data
     useDataEntriesCreditor(data, (k, v) => setValue(k, v))
 
-    const { mutateAsync } = useMutationCreditor(auth.userData.id, parseInt(id!))
+    const { mutateAsync } = useMutationCreditor(
+        auth.userData.uid,
+        parseInt(id!)
+    )
 
     const toast = useToastAlert()
 

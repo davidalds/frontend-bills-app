@@ -9,6 +9,7 @@ interface GetDebtorData {
     total_price_debts: number
     payed_debts: number
     open_debts: number
+    canceled_debts: number
 }
 
 const getDebtor = async (debtorId: number) => {
@@ -19,6 +20,7 @@ const getDebtor = async (debtorId: number) => {
             total_price_debts,
             payed_debts,
             open_debts,
+            canceled_debts,
         },
     } = await api.get<GetDebtorData>(`debtor/${debtorId}`)
     return {
@@ -27,6 +29,7 @@ const getDebtor = async (debtorId: number) => {
         total_price_debts,
         payed_debts,
         open_debts,
+        canceled_debts,
     }
 }
 

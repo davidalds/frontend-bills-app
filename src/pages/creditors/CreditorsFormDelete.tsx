@@ -29,7 +29,7 @@ const CreditorsFormDelete = ({
     const navigate = useNavigate()
 
     const { mutateAsync } = useMutationDeleteCreditor(
-        auth.userData.id,
+        auth.userData.uid,
         parseInt(id!)
     )
 

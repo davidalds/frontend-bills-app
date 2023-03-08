@@ -12,7 +12,7 @@ import { useOutlet } from '../../components/useOutletContext'
 
 const Home = () => {
     const auth = useAuth()
-    const { data, isError } = useDebtor(auth.userData.id)
+    const { data, isError } = useDebtor(auth.userData.uid)
 
     const { submitLinks } = useOutlet()
 
@@ -53,6 +53,9 @@ const Home = () => {
                     </CardInfo>
                     <CardInfo icon={SlNotebook} title={'Dívidas em aberto'}>
                         {data.open_debts || 0}
+                    </CardInfo>
+                    <CardInfo icon={SlNotebook} title={'Dívidas canceladas'}>
+                        {data.canceled_debts || 0}
                     </CardInfo>
                 </Wrap>
             ) : (
