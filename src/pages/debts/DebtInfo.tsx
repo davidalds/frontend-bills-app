@@ -26,7 +26,6 @@ import {
     AiOutlineUnlock,
     AiOutlineLock,
 } from 'react-icons/ai'
-import { ImCancelCircle } from 'react-icons/im'
 import { TfiReload } from 'react-icons/tfi'
 import { useToastAlert } from '../../components/toastAlert'
 import { useQueryClient } from 'react-query'
@@ -117,6 +116,7 @@ const DebtInfo = () => {
                 debtObj = {
                     CreditorId: data.Creditor.id,
                     description: data.description,
+                    debtday: data.debtday,
                     payday: data.payday,
                     price: parseFloat(monetaryUnformat(data.price)),
                     title: data.title,
@@ -125,6 +125,7 @@ const DebtInfo = () => {
                 debtObj = {
                     CreditorId: data.Creditor.id,
                     description: data.description,
+                    debtday: data.debtday,
                     payday: data.payday,
                     title: data.title,
                 }
@@ -160,89 +161,53 @@ const DebtInfo = () => {
                         justifyContent={'space-between'}
                     >
                         <HStack>
-                            {data.status !== 'Cancelada' ? (
-                                <Button
-                                    colorScheme={'orange'}
-                                    leftIcon={
-                                        <Icon
-                                            as={
-                                                isEdit
-                                                    ? AiOutlineLock
-                                                    : AiOutlineUnlock
-                                            }
-                                        />
-                                    }
-                                    size={'sm'}
-                                    onClick={changeEdit}
-                                >
-                                    {isEdit
-                                        ? 'Bloquear edição'
-                                        : 'Desbloquear edição'}
-                                </Button>
-                            ) : (
-                                <></>
-                            )}
+                            <Button
+                                colorScheme={'orange'}
+                                leftIcon={
+                                    <Icon
+                                        as={
+                                            isEdit
+                                                ? AiOutlineLock
+                                                : AiOutlineUnlock
+                                        }
+                                    />
+                                }
+                                size={'sm'}
+                                onClick={changeEdit}
+                            >
+                                {isEdit
+                                    ? 'Bloquear edição'
+                                    : 'Desbloquear edição'}
+                            </Button>
                         </HStack>
                         <HStack>
-                            {data?.status !== 'Cancelada' ? (
-                                <Button
-                                    size={'sm'}
-                                    colorScheme={
-                                        data?.status === 'Devendo'
-                                            ? 'green'
-                                            : 'yellow'
-                                    }
-                                    leftIcon={
-                                        <Icon
-                                            as={
-                                                data?.status === 'Devendo'
-                                                    ? AiOutlineCheckCircle
-                                                    : TfiReload
-                                            }
-                                        />
-                                    }
-                                    onClick={() =>
-                                        submitStatus(
-                                            data?.status === 'Devendo'
-                                                ? 'Paga'
-                                                : 'Devendo'
-                                        )
-                                    }
-                                >
-                                    {data?.status === 'Devendo'
-                                        ? 'Confirmar pagamento'
-                                        : 'Desconfirmar pagamento'}
-                                </Button>
-                            ) : (
-                                <div />
-                            )}
                             <Button
                                 size={'sm'}
                                 colorScheme={
-                                    data?.status !== 'Cancelada'
-                                        ? 'red'
-                                        : 'orange'
+                                    data?.status === 'Devendo'
+                                        ? 'green'
+                                        : 'yellow'
                                 }
                                 leftIcon={
                                     <Icon
                                         as={
-                                            data?.status !== 'Cancelada'
-                                                ? ImCancelCircle
+                                            data?.status === 'Devendo'
+                                                ? AiOutlineCheckCircle
                                                 : TfiReload
                                         }
                                     />
                                 }
                                 onClick={() =>
                                     submitStatus(
-                                        data?.status !== 'Cancelada'
-                                            ? 'Cancelada'
+                                        data?.status === 'Devendo'
+                                            ? 'Paga'
                                             : 'Devendo'
                                     )
                                 }
                             >
-                                {data?.status !== 'Cancelada'
-                                    ? 'Cancelar dívida'
-                                    : 'Reabrir dívida'}
+                                {data?.status === 'Devendo'
+                                    ? 'Confirmar pagamento'
+                                    : 'Desconfirmar pagamento'}
                             </Button>
                         </HStack>
                     </HStack>
@@ -291,10 +256,13 @@ const DebtInfo = () => {
                         </FormInputsWrapper>
                         <FormInputsWrapper columns={2}>
                             <InputComponent
-                                type={'text'}
-                                {...register('status')}
-                                label={'Status'}
-                                isReadOnly
+                                type={'date'}
+                                {...register('debtday')}
+                                label={'Data de débito'}
+                                isReadOnly={!isEdit}
+                                isRequired
+                                isInvalid={errors.debtday ? true : false}
+                                errors={errors.debtday}
                             />
                             <InputComponent
                                 type={'date'}
@@ -307,6 +275,20 @@ const DebtInfo = () => {
                             />
                         </FormInputsWrapper>
                         <FormInputsWrapper columns={2}>
+                            <InputComponent
+                                type={'text'}
+                                {...register('status')}
+                                label={'Status'}
+                                isReadOnly
+                            />
+                            <InputComponent
+                                type={'text'}
+                                {...register('Creditor.creditor_type')}
+                                label={'Credor tipo'}
+                                isReadOnly
+                            />
+                        </FormInputsWrapper>
+                        <FormInputsWrapper columns={1}>
                             <SelectComponent
                                 label={'Credor'}
                                 {...register('Creditor.id')}
@@ -328,12 +310,6 @@ const DebtInfo = () => {
                                     <></>
                                 )}
                             </SelectComponent>
-                            <InputComponent
-                                type={'text'}
-                                {...register('Creditor.creditor_type')}
-                                label={'Credor tipo'}
-                                isReadOnly
-                            />
                         </FormInputsWrapper>
                         <FormInputsWrapper columns={1}>
                             <FormControl isReadOnly={!isEdit}>

@@ -17,7 +17,7 @@ import SectionAlert from '../../components/SectionAlert'
 import DebtsFormSignUp from './DebtsFormSignUp'
 import { useAuth } from '../login/authentication/useAuth'
 import { Link } from 'react-router-dom'
-import { AiOutlineEye } from 'react-icons/ai'
+import { AiOutlineEye, AiOutlineCalendar } from 'react-icons/ai'
 import { dateFormat } from '../../utils/formatFunctions'
 import { useOutlet } from '../../components/useOutletContext'
 import FilterSection from '../../components/FilterSection'
@@ -117,11 +117,33 @@ const DebtsList = () => {
                         openModal={onOpen}
                     >
                         {data.rows.map(
-                            ({ id, title, status, payday, Creditor }) => (
+                            ({
+                                id,
+                                title,
+                                status,
+                                debtday,
+                                payday,
+                                Creditor,
+                            }) => (
                                 <Tr key={id}>
                                     <Td>{title}</Td>
                                     <Td>{Creditor?.name || 'Sem credor'}</Td>
-                                    <Td>{dateFormat(payday)}</Td>
+                                    <Td>
+                                        <Icon
+                                            as={AiOutlineCalendar}
+                                            mr={2}
+                                            color={'green'}
+                                        />
+                                        {dateFormat(debtday)}
+                                    </Td>
+                                    <Td>
+                                        <Icon
+                                            as={AiOutlineCalendar}
+                                            mr={2}
+                                            color={'red'}
+                                        />
+                                        {dateFormat(payday)}
+                                    </Td>
                                     <Td>{status}</Td>
                                     {status === 'Devendo' ? (
                                         <Td>

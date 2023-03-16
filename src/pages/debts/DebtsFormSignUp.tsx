@@ -136,7 +136,15 @@ const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
                             )}
                         />
                     </FormInputsWrapper>
-                    <FormInputsWrapper columns={creditorId ? 1 : 2}>
+                    <FormInputsWrapper columns={2}>
+                        <InputComponent
+                            isInvalid={errors.debtday ? true : false}
+                            type={'date'}
+                            label={'Data de débito'}
+                            {...register('debtday')}
+                            errors={errors.debtday}
+                            isRequired
+                        />
                         <InputComponent
                             isInvalid={errors.payday ? true : false}
                             type={'date'}
@@ -145,6 +153,8 @@ const DebtsFormSignUp = ({ isOpen, onClose, creditorId }: IPropsDebtsForm) => {
                             errors={errors.payday}
                             isRequired
                         />
+                    </FormInputsWrapper>
+                    <FormInputsWrapper columns={1}>
                         {creditorId ? (
                             <input
                                 type={'hidden'}

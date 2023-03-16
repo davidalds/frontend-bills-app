@@ -1,5 +1,5 @@
 import { Box, HStack } from '@chakra-ui/react'
-import React, { memo, useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { StatusType } from '../services/queries/interfaces/debtsQueriesInterface'
 import SelectComponent from './FormSelect'
 import { useForm } from 'react-hook-form'
@@ -28,7 +28,6 @@ const FilterSection = ({ onChangeStatus }: IPropsFilter) => {
                     <option value="">Todos</option>
                     <option value="Devendo">Devendo</option>
                     <option value="Paga">Paga</option>
-                    <option value="Cancelada">Cancelada</option>
                 </SelectComponent>
             </Box>
         </HStack>

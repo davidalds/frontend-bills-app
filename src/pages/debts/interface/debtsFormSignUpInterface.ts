@@ -1,15 +1,16 @@
-export interface IPropsDebtsForm{
+export interface IPropsDebtsForm {
     isOpen: boolean
     onClose: () => void
     creditorId?: number
 }
 
-type StatusType = "Paga" | "Devendo" | "Cancelada"
+type StatusType = 'Paga' | 'Devendo'
 
-export interface DebtsFormValues{
+export interface DebtsFormValues {
     title: string
     description?: string
     price: number
+    debtday: Date
     payday: Date
     status: StatusType
     DebtorId: number
