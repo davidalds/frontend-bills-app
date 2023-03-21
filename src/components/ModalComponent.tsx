@@ -18,7 +18,12 @@ const ModalComponent = ({
 }: IPropsModal) => {
     return (
         <>
-            <Modal size={'2xl'} isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+            <Modal
+                size={'2xl'}
+                isOpen={isOpen}
+                onClose={onClose}
+                closeOnOverlayClick={false}
+            >
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>{modalTitle}</ModalHeader>

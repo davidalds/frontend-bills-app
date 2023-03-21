@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from 'react-query'
 import api from '..'
+import { NotifyDebtsInterface } from './interfaces/debtsNotifyInterface'
 import {
     GetDebtData,
     GetDebtsData,
@@ -31,9 +32,13 @@ export const useDebts = (
     limit: number,
     statusFilter: StatusType | ''
 ) => {
-    return useQuery(['debts', page, statusFilter], () => getDebts(debtorId, page, limit, statusFilter), {
-        keepPreviousData: true,
-    })
+    return useQuery(
+        ['debts', page, statusFilter],
+        () => getDebts(debtorId, page, limit, statusFilter),
+        {
+            keepPreviousData: true,
+        }
+    )
 }
 
 const getDebt = async (debtorId: number, debtId: number) => {
@@ -55,4 +60,15 @@ export const useMutationDebt = (debtorId: number, debtId: number) => {
     return useMutation((data: PatchDebtData) => {
         return api.patch<PatchDebtData>(`debt/${debtorId}/${debtId}/`, data)
     })
+}
+
+const notifyDebts = async (debtorUid: string) => {
+    const {
+        data: { total, debts },
+    } = await api.get<NotifyDebtsInterface>(`debts/notify/${debtorUid}`)
+    return { total, debts }
+}
+
+export const useNotifyDebts = (debtorUid: string) => {
+    return useQuery(['debtsNotify', debtorUid], () => notifyDebts(debtorUid))
 }

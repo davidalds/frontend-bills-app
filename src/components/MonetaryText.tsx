@@ -1,4 +1,3 @@
-import React from 'react'
 import { ChangeMeta, NumberFormatBase } from 'react-number-format'
 import { monetaryFormat } from '../utils/formatFunctions'
 

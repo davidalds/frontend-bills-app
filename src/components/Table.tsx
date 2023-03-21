@@ -1,18 +1,8 @@
-import React from 'react'
-import {
-    Box,
-    Text,
-    TableContainer,
-    Table,
-    Tbody,
-    Icon,
-    HStack,
-    Button,
-    Tag,
-} from '@chakra-ui/react'
+import { Box, Text, Icon, HStack, Button, Tag } from '@chakra-ui/react'
 
 import { IPropsTable } from './interfaces/table'
 import { GrAdd } from 'react-icons/gr'
+import TableContent from './TableContent'
 
 const TableComponent = ({
     dataCount,
@@ -64,17 +54,7 @@ const TableComponent = ({
                         <div />
                     )}
                 </HStack>
-                <TableContainer>
-                    <Table variant={'simple'}>
-                        <Tbody
-                            color={'gray.400'}
-                            fontWeight={'bold'}
-                            fontSize={'sm'}
-                        >
-                            {children}
-                        </Tbody>
-                    </Table>
-                </TableContainer>
+                <TableContent>{children}</TableContent>
             </Box>
             {openModal ? (
                 <Box

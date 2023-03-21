@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
     Button,
     Flex,
@@ -15,15 +13,17 @@ import { useAuth } from '../pages/login/authentication/useAuth'
 import { Link, useNavigate } from 'react-router-dom'
 import BreadCrumbComponent from './BreadCrumb'
 import { LinkInterface } from './interfaces/links'
-
+import { useNotifyDebts } from '../services/queries/debtsQueries'
+import NotifyDebts from './NotifyDebts'
 
 interface Links {
     links: LinkInterface[]
 }
 
-const HeaderMenu = ({links}: Links) => {
+const HeaderMenu = ({ links }: Links) => {
     const auth = useAuth()
     const navigate = useNavigate()
+    const { data } = useNotifyDebts(auth.userData.uid)
 
     const logout = () => {
         auth.signout(() => navigate('/login'))
@@ -36,8 +36,13 @@ const HeaderMenu = ({links}: Links) => {
             h={'100%'}
             px={2}
         >
-            <BreadCrumbComponent links={links}/>
+            <BreadCrumbComponent links={links} />
             <HStack>
+                {data ? (
+                    <NotifyDebts total={data.total} debts={data.debts} />
+                ) : (
+                    <></>
+                )}
                 <HStack
                     boxShadow={'base'}
                     bgColor={'gray.700'}
